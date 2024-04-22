@@ -1,3 +1,5 @@
+package data_structures;
+
 public class AVLTree<T extends Comparable<T>> implements Tree<T> {
 
     private Node<T> root;
@@ -37,7 +39,7 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
         } else if (data.compareTo(node.getData()) > 0) {
             node.setRightChild(delete(data, node.getRightChild()));
         } else {
-            // One Child or Leaf Node (no children)
+            // One Child or Leaf data_structures.Node (no children)
             if (node.getLeftChild() == null) {
                 return node.getRightChild();
             } else if (node.getRightChild() == null) {
