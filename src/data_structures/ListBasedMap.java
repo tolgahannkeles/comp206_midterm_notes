@@ -17,7 +17,7 @@ public class ListBasedMap<K, V> {
             }
         }
         entries[size++] = new Entry<>(key, value);
-        return null;
+        return value;
     }
 
     public V remove(K key) {

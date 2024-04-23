@@ -1,10 +1,27 @@
 package data_structures;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
 
     Node<T> root;
-    public BinarySearchTree(T value) {
-        super(value);
+    public BinarySearchTree() {
+        super(null);
+    }
+
+    public List<T> inorderTraversal() {
+        List<T> result = new ArrayList<>();
+        inorderTraversal(root, result);
+        return result;
+    }
+
+    private void inorderTraversal(Node<T> node, List<T> result) {
+        if (node != null) {
+            inorderTraversal(node.getLeft(), result);
+            result.add(node.getValue());
+            inorderTraversal(node.getRight(), result);
+        }
     }
 
     public void insert(T value) {

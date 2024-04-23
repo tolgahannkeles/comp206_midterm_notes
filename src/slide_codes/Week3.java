@@ -3,8 +3,10 @@ package slide_codes;
 public class Week3 {
 
     public static void main(String[] args) {
-        printPrimesUpToN(55);
+        int[] arr = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+        System.out.println(binarySearch(arr, 0, arr.length, 5));
     }
+
     public static int binarySearch(int[] arr, int target) {
         int left = 0;
         int right = arr.length - 1;
@@ -30,6 +32,21 @@ public class Week3 {
         // Target not found
         return -1;
     }
+
+    static int binarySearch(int[] arr, int start, int finish, int target) {
+        if (start > finish) {
+            return -1;
+        }
+        int mid = start + (finish - start + 1) / 2;
+        if (target < arr[mid]) {
+            return binarySearch(arr, start, mid - 1, target);
+        } else if (target > arr[mid]) {
+            return binarySearch(arr, mid + 1, finish, target);
+        } else {
+            return mid;
+        }
+    }
+
 
     public static int fibonacciRecursive(int n) {
         if (n <= 1) {

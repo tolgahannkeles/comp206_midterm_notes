@@ -1,5 +1,7 @@
 package slide_codes;
 
+import data_structures.BinarySearchTree;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,21 +9,25 @@ import java.util.PriorityQueue;
 
 public class Week4 {
 
-    public String longestCommonPrefix(String[] strs) {
+    public static String longestCommonPrefix(String[] strs) {
         // Because it does total 3n+4 processes in the bad case, it has O(n) time complexity.
         // Because it does total 3n+4 processes in the bad case, it has O(n) space complexity.
 
         if (strs.length == 0) return "";
-        String prefix = strs[0];
-        for (int i = 1; i < strs.length; i++) { // n process
-            while (strs[i].indexOf(prefix) != 0) { // 2n process
-                prefix = prefix.substring(0, prefix.length() - 1);
-                if (prefix.isEmpty()) return "";
+        Arrays.sort(strs);
+        char[] prefix = strs[0].toCharArray();
+        char[] suffix = strs[strs.length - 1].toCharArray();
+        int min= Math.min(prefix.length, suffix.length);
+        for(int i=0; i<min; i++){
+            if(prefix[i] != suffix[i]){
+                prefix = Arrays.copyOfRange(prefix, 0, i);
+                break;
             }
         }
-        return prefix;
-    }
 
+
+        return String.copyValueOf(prefix);
+    }
 
     public List<List<Integer>> threeSum(int[] nums) {
         // Because it does total 3n+4 processes in the bad case, it has O(n) time complexity.
@@ -60,13 +66,13 @@ public class Week4 {
         return max;
     }
 
-    public int findKthLargest(int[] nums, int k) {
+    public static int findKthLargest(int[] nums, int k) {
         PriorityQueue<Integer> minHeap = new PriorityQueue<Integer>();
-        for(int i = 0; i < k; i++) {
+        for (int i = 0; i < k; i++) {
             minHeap.add(nums[i]);
         }
-        for(int i = k; i < nums.length; i++) {
-            if(nums[i] > minHeap.peek()) {
+        for (int i = k; i < nums.length; i++) {
+            if (nums[i] > minHeap.peek()) {
                 minHeap.poll();
                 minHeap.add(nums[i]);
             }
@@ -74,18 +80,40 @@ public class Week4 {
         return minHeap.peek();
     }
 
+
+    public static int findKthLargest2(int[] nums, int k){
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>();
+        for(int num: nums){
+            bst.insert(num);
+        }
+
+        List<Integer> inorder = bst.inorderTraversal();
+        return  inorder.get(inorder.size()-k);
+    }
+
+
     public int findKthSmallest(int[] nums, int k) {
         PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>((a, b) -> b - a);
-        for(int i = 0; i < k; i++) {
+        for (int i = 0; i < k; i++) {
             maxHeap.add(nums[i]);
         }
-        for(int i = k; i < nums.length; i++) {
-            if(nums[i] < maxHeap.peek()) {
+        for (int i = k; i < nums.length; i++) {
+            if (nums[i] < maxHeap.peek()) {
                 maxHeap.poll();
                 maxHeap.add(nums[i]);
             }
         }
         return maxHeap.peek();
+    }
+
+    public static int findKthSmallest2(int[] nums, int k){
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>();
+        for(int num: nums){
+            bst.insert(num);
+        }
+
+        List<Integer> inorder = bst.inorderTraversal();
+        return inorder.get(k-1);
     }
 
 

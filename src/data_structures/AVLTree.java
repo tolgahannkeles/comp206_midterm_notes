@@ -1,23 +1,18 @@
 package data_structures;
 
-public class AVLTree<T extends Comparable<T>> implements Tree<T> {
+public class AVLTree<T extends Comparable<T>> {
 
-    private Node<T> root;
+    Node<T> root;
 
-    @Override
-    public Tree<T> insert(T data) {
-        root = insert(data, root);
-        return this;
-    }
 
-    private Node<T> insert(T data, Node<T> node) {
+    public Node<T> insert(T data, Node<T> node) {
         if (node == null) {
             return new Node<>(data);
         }
-        if (data.compareTo(node.getData()) < 0) {
-            node.setLeftChild(insert(data, node.getLeftChild()));
-        } else if (data.compareTo(node.getData()) > 0) {
-            node.setRightChild(insert(data, node.getRightChild()));
+        if (data.compareTo(node.data) < 0) {
+            node.leftChild = insert(data, node.leftChild);
+        } else if (data.compareTo(node.data) > 0) {
+            node.rightChild = insert(data, node.rightChild);
         } else {
             return node;
         }
@@ -25,93 +20,42 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
         return applyRotation(node);
     }
 
-    @Override
-    public void delete(T data) {
-        root = delete(data, root);
-    }
 
-    private Node<T> delete(T data, Node<T> node) {
+    public Node<T> delete(T data, Node<T> node) {
         if (node == null) {
             return null;
         }
-        if (data.compareTo(node.getData()) < 0) {
-            node.setLeftChild(delete(data, node.getLeftChild()));
-        } else if (data.compareTo(node.getData()) > 0) {
-            node.setRightChild(delete(data, node.getRightChild()));
+        if (data.compareTo(node.data) < 0) {
+            node.leftChild = delete(data, node.leftChild);
+        } else if (data.compareTo(node.data) > 0) {
+            node.rightChild = delete(data, node.rightChild);
         } else {
             // One Child or Leaf data_structures.Node (no children)
-            if (node.getLeftChild() == null) {
-                return node.getRightChild();
-            } else if (node.getRightChild() == null) {
-                return node.getLeftChild();
+            if (node.leftChild == null) {
+                return node.rightChild;
+            } else if (node.rightChild == null) {
+                return node.leftChild;
             }
             // Two Children
-            node.setData(getMax(node.getLeftChild()));
-            node.setLeftChild(delete(node.getData(), node.getLeftChild()));
+            node.data = getMax(node.leftChild);
+            node.leftChild = delete(node.data, node.leftChild);
         }
         updateHeight(node);
         return applyRotation(node);
     }
 
-    @Override
-    public void traverse() {
-        traverseInOrder(root);
-    }
-
-    private void traverseInOrder(Node<T> node) {
-        if (node != null) {
-            traverseInOrder(node.getLeftChild());
-            System.out.println(node);
-            traverseInOrder(node.getRightChild());
-        }
-    }
-
-    @Override
-    public T getMax() {
-        if (isEmpty()) {
-            return null;
-        }
-        return getMax(root);
-    }
-
-    private T getMax(Node<T> node) {
-        if (node.getRightChild() != null) {
-            return getMax(node.getRightChild());
-        }
-        return node.getData();
-    }
-
-    @Override
-    public T getMin() {
-        if (isEmpty()) {
-            return null;
-        }
-        return getMin(root);
-    }
-
-    private T getMin(Node<T> node) {
-        if (node.getLeftChild() != null) {
-            return getMin(node.getLeftChild());
-        }
-        return node.getData();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return root == null;
-    }
 
     private Node<T> applyRotation(Node<T> node) {
         int balance = balance(node);
         if (balance > 1) {
-            if (balance(node.getLeftChild()) < 0) {
-                node.setLeftChild(rotateLeft(node.getLeftChild()));
+            if (balance(node.leftChild) < 0) {
+                node.leftChild = rotateLeft(node.leftChild);
             }
             return rotateRight(node);
         }
         if (balance < -1) {
-            if (balance(node.getRightChild()) > 0) {
-                node.setRightChild(rotateRight(node.getRightChild()));
+            if (balance(node.rightChild) > 0) {
+                node.rightChild = rotateRight(node.rightChild);
             }
             return rotateLeft(node);
         }
@@ -119,20 +63,20 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
     }
 
     private Node<T> rotateRight(Node<T> node) {
-        Node<T> leftNode = node.getLeftChild();
-        Node<T> centerNode = leftNode.getRightChild();
-        leftNode.setRightChild(node);
-        node.setLeftChild(centerNode);
+        Node<T> leftNode = node.leftChild;
+        Node<T> centerNode = leftNode.rightChild;
+        leftNode.rightChild = node;
+        node.leftChild = centerNode;
         updateHeight(node);
         updateHeight(leftNode);
         return leftNode;
     }
 
     private Node<T> rotateLeft(Node<T> node) {
-        Node<T> rightNode = node.getRightChild();
-        Node<T> centerNode = rightNode.getLeftChild();
-        rightNode.setLeftChild(node);
-        node.setRightChild(centerNode);
+        Node<T> rightNode = node.rightChild;
+        Node<T> centerNode = rightNode.leftChild;
+        rightNode.leftChild = node;
+        node.rightChild = centerNode;
         updateHeight(node);
         updateHeight(rightNode);
         return rightNode;
@@ -140,79 +84,56 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
 
     private void updateHeight(Node<T> node) {
         int maxHeight = Math.max(
-                height(node.getLeftChild()),
-                height(node.getRightChild())
+                node.leftChild.height,
+                node.rightChild.height
         );
-        node.setHeight(maxHeight + 1);
+        node.height = maxHeight + 1;
     }
 
     private int balance(Node<T> node) {
-        return node != null ? height(node.getLeftChild()) - height(node.getRightChild()) : 0;
+        return node != null ? node.leftChild.height - node.rightChild.height : 0;
     }
 
-    private int height(Node<T> node) {
-        return node != null ? node.getHeight() : 0;
+    public void traverseInOrder(Node<T> node) {
+        if (node != null) {
+            traverseInOrder(node.leftChild);
+            System.out.println(node);
+            traverseInOrder(node.rightChild);
+        }
     }
+
+
+    public T getMax(Node<T> node) {
+        if (node.rightChild != null) {
+            return getMax(node.rightChild);
+        }
+        return node.data;
+    }
+
+    public T getMin(Node<T> node) {
+        if (node.leftChild != null) {
+            return getMin(node.leftChild);
+        }
+        return node.data;
+    }
+
+    public boolean isEmpty() {
+        return root == null;
+    }
+
 
 }
 
 class Node<T extends Comparable<T>> {
 
-    private int height = 1;
+    public int height = 1;
 
-    private Node<T> leftChild;
-    private Node<T> rightChild;
-    private T data;
+    public Node<T> leftChild;
+    public Node<T> rightChild;
+    public T data;
 
     public Node(T data) {
         this.data = data;
     }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Node<T> getLeftChild() {
-        return leftChild;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public Node<T> getRightChild() {
-        return rightChild;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public void setLeftChild(Node<T> leftChild) {
-        this.leftChild = leftChild;
-    }
-
-    public void setRightChild(Node<T> rightChild) {
-        this.rightChild = rightChild;
-    }
-}
-
-interface Tree<T extends Comparable<T>> {
-
-    Tree<T> insert(T data);
-
-    void delete(T data);
-
-    void traverse();
-
-    T getMax();
-
-    T getMin();
-
-    boolean isEmpty();
 
 }

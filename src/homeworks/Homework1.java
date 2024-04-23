@@ -6,9 +6,9 @@ import java.util.Arrays;
 public class Homework1 {
     public static void main(String[] args) {
         Question1.test();
-        Question2.test();
-        Question3.test();
-        Question4.test();
+        //Question2.test();
+        //Question3.test();
+        //Question4.test();
     }
 
     static class Question1 {
